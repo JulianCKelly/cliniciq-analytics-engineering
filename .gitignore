@@ -1,0 +1,21 @@
+# Python
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+# Env
+.env
+*.env
+
+# IDE / OS
+.idea/
+.vscode/
+.DS_Store
+
+# Data (keep local)
+data/
+*.csv
+*.xlsx
+*.parquet
+*.db
