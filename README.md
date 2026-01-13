@@ -5,6 +5,9 @@ ClinicIQ is an analytics infrastructure project focused on building reliable ing
 This project is intentionally framed as an **internal platform**, not a demo. The emphasis is on structure, correctness, and repeatability—how data is handled end-to-end, not just what outputs look like.
 
 ---
+## Status
+Current state: repo skeleton + core modules (`db`, `insights`, `main`) pushed cleanly.  
+Next iteration: tighten data contracts, add a small example dataset in `sample_data/`, and expose one API endpoint to serve a computed insight.
 
 ## What this project demonstrates
 - Clean separation between ingestion, persistence, and analytics logic
