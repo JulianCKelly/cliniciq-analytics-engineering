@@ -1,0 +1,58 @@
+version: 2
+
+models:
+  - name: stg_patients
+    description: "Typed staging layer for synthetic patients seed."
+    columns:
+      - name: patient_id
+        tests: [not_null, unique]
+      - name: birth_date
+        tests: [not_null]
+
+  - name: stg_encounters
+    description: "Typed staging layer for synthetic encounters seed."
+    columns:
+      - name: encounter_id
+        tests: [not_null, unique]
+      - name: patient_id
+        tests: [not_null]
+      - name: start_at
+        tests: [not_null]
+
+  - name: stg_observations
+    description: "Typed staging layer for synthetic vitals/labs observations."
+    columns:
+      - name: observation_id
+        tests: [not_null, unique]
+      - name: encounter_id
+        tests: [not_null]
+      - name: patient_id
+        tests: [not_null]
+      - name: observed_at
+        tests: [not_null]
+
+  - name: dim_patients
+    description: "Patient dimension with derived age."
+    columns:
+      - name: patient_id
+        tests: [not_null, unique]
+
+  - name: fct_encounters
+    description: "Encounter fact table with derived duration."
+    columns:
+      - name: encounter_id
+        tests: [not_null, unique]
+      - name: patient_id
+        tests: [not_null]
+
+  - name: fct_bp_readings
+    description: "BP readings per encounter (systolic + diastolic)."
+    columns:
+      - name: encounter_id
+        tests: [not_null]
+      - name: patient_id
+        tests: [not_null]
+      - name: systolic
+        tests: [not_null]
+      - name: diastolic
+        tests: [not_null]

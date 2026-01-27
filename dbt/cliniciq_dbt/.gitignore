@@ -1,0 +1,9 @@
+
+target/
+dbt_packages/
+logs/
+dbt/**/target/
+dbt/**/logs/
+dbt/**/dbt_packages/
+*.duckdb
+dbt/**/seeds/*.csv

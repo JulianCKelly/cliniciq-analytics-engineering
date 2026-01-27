@@ -19,3 +19,5 @@ data/
 *.xlsx
 *.parquet
 *.db
+
+dbt/**/seeds/*.csv

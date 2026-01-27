@@ -1,73 +1,147 @@
-# ClinicIQ — Analytics Infrastructure
+# ClinicIQ
 
-ClinicIQ is an analytics infrastructure project focused on building reliable ingestion, validation, and analytics-ready data models for healthcare cost estimation and decision support.
+ClinicIQ is a healthcare analytics infrastructure project that demonstrates how EMR-style data can be ingested, validated, and transformed into analytics-ready datasets.
 
-This project is intentionally framed as an **internal platform**, not a demo. The emphasis is on structure, correctness, and repeatability—how data is handled end-to-end, not just what outputs look like.
-
----
-## Status
-Current state: repo skeleton + core modules (`db`, `insights`, `main`) pushed cleanly.  
-Next iteration: tighten data contracts, add a small example dataset in `sample_data/`, and expose one API endpoint to serve a computed insight.
-
-## What this project demonstrates
-- Clean separation between ingestion, persistence, and analytics logic
-- Data validation and normalization as first-class concerns
-- Analytics-ready outputs designed for downstream consumption
-- Infrastructure-minded Python structure (no notebooks-as-products)
+The project prioritizes **structure, correctness, and repeatability** over UI or visualization. It is intentionally designed as an internal analytics platform rather than a demo application.
 
 ---
 
-## High-level architecture
-Conceptually, ClinicIQ follows a simple but deliberate flow:
+## System Overview
 
-1. **Ingestion**
-   - Structured loading of healthcare-related datasets
-2. **Persistence**
-   - Local database abstraction (see `db.py`)
-3. **Analytics / Insights**
-   - Transformations and derived metrics (`insights.py`)
-4. **Interfaces**
-   - API-first orientation (FastAPI) for future consumers
+ClinicIQ is composed of three clearly separated layers:
+
+1. **Application layer** — FastAPI
+2. **Analytics engineering layer** — dbt
+3. **Data generation layer** — synthetic EMR-style data
+
+This separation mirrors real-world healthcare analytics systems and allows each concern to evolve independently.
 
 ---
 
-## Project structure
+## Repository Structure
+ClinicIQ/
+├── src/                     # Application layer
+│   ├── main.py               # FastAPI entry point
+│   ├── db.py                 # DuckDB access helpers
+│   └── insights.py           # Analytics-backed endpoints
+│
+├── scripts/                 # Data generation utilities
+│   └── generate_synthetic_emr_csvs.py
+│
+├── sample_data/              # Canonical example EMR-style data
+│   ├── patients.csv
+│   ├── encounters.csv
+│   └── observations.csv
+│
+├── dbt/
+│   └── cliniciq_dbt/         # Analytics engineering layer
+│       ├── models/
+│       │   ├── staging/
+│       │   └── marts/
+│       │       ├── core/
+│       │       └── analytics/
+│       ├── schema.yml        # Model documentation + data tests
+│       └── dbt_project.yml
+│
+└── README.md
 
-main.py        # Application entry point
-db.py          # Data access & persistence logic
-insights.py    # Analytics / transformation layer
-
-scripts/         # One-off helpers and experiments
-sample_data/     # Safe-to-commit example inputs
-
-Sensitive or large datasets are intentionally excluded from version control.
+Runtime artifacts (DuckDB files, dbt targets, logs) are excluded from version control.
 
 ---
 
-## Why this exists
-Healthcare data systems fail less often because of “bad models” and more often because of:
-- unclear ownership
-- inconsistent transformations
-- fragile pipelines
-- lack of validation
+## Analytics Engineering (dbt)
 
-ClinicIQ is an exploration of solving those problems *before* scale—by designing analytics infrastructure that can be reasoned about, tested, and extended.
+ClinicIQ includes a production-style dbt project that models EMR-style healthcare data into analytics-ready marts using DuckDB for local development.
+
+### Data Inputs
+Synthetic EMR-style CSVs:
+- `patients`
+- `encounters`
+- `observations`
+
+These datasets are generated locally and are safe to commit.
 
 ---
 
-## Running locally
+### dbt Models
+
+#### Staging Layer
+Typed, normalized representations of source data:
+- `stg_patients`
+- `stg_encounters`
+- `stg_observations`
+
+#### Core Marts
+Conformed entities used across analytics:
+- `dim_patients` — patient dimension with derived age
+- `fct_encounters` — encounter-level fact table
+
+#### Analytics Marts
+Derived metrics intended for downstream consumption:
+- `fct_bp_readings` — systolic and diastolic blood pressure per encounter
+
+---
+
+### Data Quality
+
+Data quality is enforced using dbt tests:
+- `not_null`
+- `unique`
+
+Tests are applied across staging models and marts to ensure analytical correctness.
+
+---
+
+## Application Layer
+
+The FastAPI application is structured to consume analytics-ready outputs rather than raw data.
+
+- `main.py` defines the application and routes
+- `db.py` abstracts database access (DuckDB locally)
+- `insights.py` exposes analytics-backed endpoints
+
+This mirrors how analytics marts are typically served to downstream services in production environments.
+
+---
+
+## Running Locally
+
+### 1. Environment setup
 ```bash
 python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
+```
+
+### 2. Generate synthetic EMR-style data
+```bash
+python scripts/generate_synthetic_emr_csvs.py
+```
+
+### 3. Build analytics models
+```bash
+cd dbt/cliniciq_dbt
+dbt seed --full-refresh
+dbt build
+```
+
+### 4. Run the API
+```bash
 python src/main.py
+```
 
-Planned extensions
-	•	Explicit data contracts and validation checks
-	•	Incremental ingestion patterns
-	•	Cost model abstractions
-	•	API consumers (analytics tools, services)
+### (Optional)
 
-If you’re a recruiter or hiring manager:
-ClinicIQ reflects how I think about analytics infrastructure in real environments—clarity over cleverness, and systems that can be maintained by people other than the original author.
+```bash
+dbt docs generate
+dbt docs serve
+```
+### Design Principles
+	•	Clear separation between ingestion, transformation, and consumption
+	•	Analytics models treated as first-class assets
+	•	Explicit transformations and tests over implicit assumptions
+	•	Infrastructure designed to remain understandable as complexity grows
 
+### Purpose
+ClinicIQ reflects how healthcare analytics systems should be built before scale:
+with clarity, validation, and intentional structure, so they remain reliable as complexity increases.
