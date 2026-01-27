@@ -20,4 +20,8 @@ data/
 *.parquet
 *.db
 
+# dbt artifacts
 dbt/**/seeds/*.csv
+dbt/**/target/
+dbt/**/logs/
+dbt.log
