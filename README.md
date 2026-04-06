@@ -19,32 +19,33 @@ This separation mirrors real-world healthcare analytics systems and allows each 
 ---
 
 ## Repository Structure
-ClinicIQ/
-├── src/                     # Application layer
-│   ├── main.py               # FastAPI entry point
-│   ├── db.py                 # DuckDB access helpers
-│   └── insights.py           # Analytics-backed endpoints
+```text
+CliniclQ/
+├── src/                         # Application layer
+│   ├── main.py                  # FastAPI entry point
+│   ├── db.py                    # DuckDB access helpers
+│   └── insights.py              # Analytics-backed endpoints
 │
-├── scripts/                 # Data generation utilities
+├── scripts/                     # Data generation utilities
 │   └── generate_synthetic_emr_csvs.py
 │
-├── sample_data/              # Canonical example EMR-style data
+├── sample_data/                 # Canonical example EMR-style data
 │   ├── patients.csv
 │   ├── encounters.csv
 │   └── observations.csv
 │
 ├── dbt/
-│   └── cliniciq_dbt/         # Analytics engineering layer
+│   └── cliniciq_dbt/            # Analytics engineering layer
 │       ├── models/
 │       │   ├── staging/
-│       │   └── marts/
-│       │       ├── core/
-│       │       └── analytics/
-│       ├── schema.yml        # Model documentation + data tests
+│       │   ├── core/
+│       │   ├── marts/
+│       │   └── analytics/
+│       ├── schema.yml           # Model documentation + data tests
 │       └── dbt_project.yml
 │
 └── README.md
-
+```
 Runtime artifacts (DuckDB files, dbt targets, logs) are excluded from version control.
 
 ---
